@@ -1,11 +1,30 @@
-export const MainView = () => {
-  return (
-    <div>
-      <div>Eloquent JavaScript</div>
-      <div>Mastering JavaScript Functional Programming</div>
-      <div>JavaScript: The Good Parts</div>
-      <div>JavaScript: The Definitive Guide</div>
-      <div>The Road to React</div>
-    </div>
-  );
-}
+export const MovieView = ({ movie, onBackClick }) => {
+    return (
+        <div>
+            <div>
+                <img src={movie.ImageURL} />
+            </div>
+            <div>
+                <span>Title: </span>
+                <span>{movie.Title}</span>
+            </div>
+            <div>
+                <span>Description: </span>
+                <span>{movie.Description}</span>
+            </div>
+            <div>
+                <span>Genre: </span>
+                <span>{movie.Genre}</span>
+            </div>
+            <div>
+                <span>Director: </span>
+                <span>{movie.Director}</span>
+            </div>
+            <div>
+                <span>Year: </span>
+                <span>{movie.Year}</span>
+            </div>
+            <button onClick={onBackClick}>Back</button>
+        </div>
+    );
+};
