@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { MovieCard } from "./movie-card";
-import { MovieView } from "./movieview";
+
 
 export const MainView = () => {
     const [movies, setMovies] = useState([]);
@@ -8,7 +8,9 @@ export const MainView = () => {
     const [selectedMovie, setSelectedMovie] = useState(null);
 useEffect(() => {
 		const fetchMovieData = async () => {
-			const fetchedData = await fetch('https://aidens-myflix-api.herokuapp.com/movies');
+	useEffect(() => {
+    fetch("https://myflixapii-3122b3109c5c.herokuapp.com/");
+  }, []);
 			const data = await fetchedData.json();
 			const moviesFromAPI = data.map((movie) => {
 				return {
@@ -42,11 +44,11 @@ useEffect(() => {
 
 		return (
 			<>
-    if (selectedMovie) {
-        return (
-            <MovieView movie={selectedMovie} onBackClick={() => setSelectedMovie(null)} />
-        );
-    }
+   if (selectedMovie) {
+return (
+<MovieView movie={selectedMovie} onBackClick={() => setSelectedMovie(null)} />
+);
+} 
 
     if (movies.length === 0) {
         return <div>The list is empty!</div>;
