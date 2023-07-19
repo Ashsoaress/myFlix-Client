@@ -1,40 +1,47 @@
-import { useState } from "react";
+import { useEffect, useState } from 'react';
 import { MovieCard } from "./movie-card";
 import { MovieView } from "./movieview";
 
 export const MainView = () => {
-    const [movies, setMovies] = useState ([
-        {
-            id: 1,
-            Title: 'The Shawshank Redemption',
-            Description: 'Andy Dufresne (Tim Robbins) is sentenced to two consecutive life terms in prison for the murders of his wife and her lover and is sentenced to a tough prison. However, only Andy knows he didnt commit the crimes. ',
-            Genre: 'Drama',
-            Director: 'Frank Darabont',
-            ImageURL: 'https://www.themoviedb.org/t/p/original/tNf2OIGrOfHh4j3VvMvKceIDoix.jpg',
-            Year: '1994'
-        },
-        {
-            id: 2,
-            Title: 'Fight Club',
-            Description: 'A depressed man (Edward Norton) suffering from insomnia meets a strange soap salesman named Tyler Durden (Brad Pitt) and soon finds himself living in his squalid house after his perfect apartment is destroyed.',
-            Genre: 'Drama',
-            Director: 'David Fincher',
-            ImageURL: 'https://www.themoviedb.org/t/p/original/wlmGPHDbnOK4AwL37m6tegxO8A3.jpg',
-            Year: '1999'
-        },
-        {
-            id: 3,
-            Title: 'The Lord of the Rings: The Fellowship of the Ring',
-            Description: 'The first adventure in The Lord of the Rings trilogy!',
-            Genre: 'Adventure',
-            Director: 'Peter Jackson',
-            ImageURL: 'https://www.themoviedb.org/t/p/original/mm1NV8GdBvlzI1xI590p3CvJMOJ.jpg',
-            Year: '2001'
-        }
-    ]);
+    const [movies, setMovies] = useState([]);
 
     const [selectedMovie, setSelectedMovie] = useState(null);
+useEffect(() => {
+		const fetchMovieData = async () => {
+			const fetchedData = await fetch('https://aidens-myflix-api.herokuapp.com/movies');
+			const data = await fetchedData.json();
+			const moviesFromAPI = data.map((movie) => {
+				return {
+					id: movie._id,
+					title: movie.Title,
+					image: movie.ImagePath,
+					description: movie.Description,
+					actors: movie.Actors,
+					genre: {
+						name: movie.Genre.Name,
+						description: movie.Genre.Description,
+					},
+					director: {
+						name: movie.Director.Name,
+						bio: movie.Director.Bio,
+					},
+				};
+			});
 
+			setMovies(moviesFromAPI);
+		};
+
+		fetchMovieData();
+	}, []);
+
+	// Display selected movie details and similar movie cards
+	function displayMovieView() {
+		let similarMovies = movies.filter((movie) => {
+			return movie.id !== selectedMovie.id && movie.genre.name == selectedMovie.genre.name;
+		});
+
+		return (
+			<>
     if (selectedMovie) {
         return (
             <MovieView movie={selectedMovie} onBackClick={() => setSelectedMovie(null)} />
@@ -55,6 +62,31 @@ export const MainView = () => {
                         setSelectedMovie(newSelectedMovie);
                     }}
                 />
+                <br />
+				<h2>Similar Movies</h2>
+				{similarMovies.map((movie) => (
+					<MovieCard
+						key={movie.id}
+						movie={movie}
+						onClick={(newSelectedMovie) => {
+							setSelectedMovie(newSelectedMovie);
+						}}
+					/>
+				))}
+			</>
+		);
+	}
+
+	// Display MovieView if there is a selected movie, and display MovieCard list if there is none selected.
+	return (
+		<div>
+			{selectedMovie ? (
+				displayMovieView()
+                ) : movies.length ? (
+				movies.map((movie) => (
+					<MovieCard
+                        key={movie.id}
+                        <div>The Movie list is empty!</div>
             ))}
         </div>
     );
