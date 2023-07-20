@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react';
-import { MovieCard } from "./movie-card";
+import MovieCard from './MovieCard';
+import MovieView from './MovieView';
 
-
-export const MainView = () => {
+function MainView() {
     const [movies, setMovies] = useState([]);
-
     const [selectedMovie, setSelectedMovie] = useState(null);
-useEffect(() => {
+    useEffect(() => {
 		const fetchMovieData = async () => {
-	useEffect(() => {
-    fetch("https://myflixapii-3122b3109c5c.herokuapp.com/");
-  }, []);
+			const fetchedData = await fetch('https://aidens-myflix-api.herokuapp.com/movies');
 			const data = await fetchedData.json();
 			const moviesFromAPI = data.map((movie) => {
 				return {
@@ -44,27 +41,13 @@ useEffect(() => {
 
 		return (
 			<>
-   if (selectedMovie) {
-return (
-<MovieView movie={selectedMovie} onBackClick={() => setSelectedMovie(null)} />
-);
-} 
-
-    if (movies.length === 0) {
-        return <div>The list is empty!</div>;
-    }
-
-    return (
-        <div>
-            {movies.map((movie) => (
-                <MovieCard
-                    key={movie.id}
-                    movie={movie}
-                    onMovieClick={(newSelectedMovie) => {
-                        setSelectedMovie(newSelectedMovie);
-                    }}
-                />
-                <br />
+				<MovieView
+					movie={selectedMovie}
+					onBackClick={() => {
+						setSelectedMovie(null);
+					}}
+				/>
+				<br />
 				<h2>Similar Movies</h2>
 				{similarMovies.map((movie) => (
 					<MovieCard
@@ -84,12 +67,18 @@ return (
 		<div>
 			{selectedMovie ? (
 				displayMovieView()
-                ) : movies.length ? (
+			) : movies.length ? (
 				movies.map((movie) => (
 					<MovieCard
-                        key={movie.id}
-                        <div>The Movie list is empty!</div>
-            ))}
-        </div>
-    );
-};
+                    key={movie.id}
+						movie={movie}
+						onClick={(newSelectedMovie) => {
+							setSelectedMovie(newSelectedMovie);
+						}}
+					/>
+				))
+			) : (
+                <div>The Movie list is empty!</div>
+			)}
+		</div>
+	);}
