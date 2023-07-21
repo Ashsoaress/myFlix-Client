@@ -1,84 +1,73 @@
 import { useEffect, useState } from 'react';
-import MovieCard from './MovieCard';
-import MovieView from './MovieView';
+import { MovieCard } from '../movie-card/movie-card';
+import { MovieView } from '../movie-view';
 
-function MainView() {
-    const [movies, setMovies] = useState([]);
-    const [selectedMovie, setSelectedMovie] = useState(null);
-    useEffect(() => {
-		const fetchMovieData = async () => {
-			const fetchedData = await fetch('https://aidens-myflix-api.herokuapp.com/movies');
-			const data = await fetchedData.json();
+export const MainView = () => {
+ // State to store the movie data retrieved from the API
+  const [movies, setMovies] = useState([]);
+   // State to store the selected movie for displaying its details
+   const [selectedMovie, setSelectedMovie] = useState(null);
+   // Fetch movie data from the API when the component mounts
+  useEffect(() => {
+fetch("https://myflixapii-3122b3109c5c.herokuapp.com/")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+
+	      
+        // Transform the fetched data to match the required structure
+		
 			const moviesFromAPI = data.map((movie) => {
 				return {
-					id: movie._id,
+					_id: movie._id,
 					title: movie.Title,
-					image: movie.ImagePath,
-					description: movie.Description,
-					actors: movie.Actors,
-					genre: {
-						name: movie.Genre.Name,
-						description: movie.Genre.Description,
-					},
-					director: {
-						name: movie.Director.Name,
-						bio: movie.Director.Bio,
-					},
-				};
-			});
+					imagePath: movie.ImagePath,
+					 Director: {
+              firstName: movie.Director.firstName,
+              lastName: movie.Director.lastName
+            },
+            Description: movie.Description,
+            Year: movie.Year,
+            Genres: movie.Genres.map((genre) => genre.Name),
+            Featured: movie.Featured
+          };
+        });
+	      
+    // Set the transformed movie data in the state
 
 			setMovies(moviesFromAPI);
-		};
+		})
+	  .catch((error) => {
+        console.log('Error fetching movies:', error);
+      });
+  }, []);
+ // If a movie is selected, render the MovieView component
+  if (selectedMovie) {
+    return (
+        <MovieView
+        movie={selectedMovie}
+        onBackClick={() => setSelectedMovie(null)}
+      />
+    );
+  } 
+   // If the movie list is empty, display a message
+   if (movies.length === 0) {
+    return <div>The list is empty!</div>;
+  }
 
-		fetchMovieData();
-	}, []);
-
-	// Display selected movie details and similar movie cards
-	function displayMovieView() {
-		let similarMovies = movies.filter((movie) => {
-			return movie.id !== selectedMovie.id && movie.genre.name == selectedMovie.genre.name;
-		});
-
-		return (
-			<>
-				<MovieView
-					movie={selectedMovie}
-					onBackClick={() => {
-						setSelectedMovie(null);
-					}}
-				/>
-				<br />
-				<h2>Similar Movies</h2>
-				{similarMovies.map((movie) => (
-					<MovieCard
-						key={movie.id}
-						movie={movie}
-						onClick={(newSelectedMovie) => {
-							setSelectedMovie(newSelectedMovie);
-						}}
-					/>
-				))}
-			</>
-		);
-	}
-
-	// Display MovieView if there is a selected movie, and display MovieCard list if there is none selected.
-	return (
-		<div>
-			{selectedMovie ? (
-				displayMovieView()
-			) : movies.length ? (
-				movies.map((movie) => (
-					<MovieCard
-                    key={movie.id}
-						movie={movie}
-						onClick={(newSelectedMovie) => {
-							setSelectedMovie(newSelectedMovie);
-						}}
-					/>
-				))
-			) : (
-                <div>The Movie list is empty!</div>
-			)}
-		</div>
-	);}
+  // Render the movie cards for each movie in the list
+  return (
+    <div>
+      {movies.map((movie) => (
+        <MovieCard
+        key={movie._id}
+          movie={movie}
+          onMovieClick={(newSelectedMovie) => {
+            setSelectedMovie(newSelectedMovie);
+          }}
+        />
+      ))}
+      </div>
+  );
+};
+		
