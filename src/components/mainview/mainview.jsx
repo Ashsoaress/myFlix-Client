@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { MovieCard } from '../movie-card/movie-card';
-import { MovieView } from '../movie-view';
+import {MovieView} from "./movieview";
+import {MovieCard} from "./movie-card";
 
 export const MainView = () => {
  // State to store the movie data retrieved from the API
